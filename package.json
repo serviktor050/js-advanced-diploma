@@ -1,0 +1,47 @@
+{
+  "name": "defender-game",
+  "version": "1.0.0",
+  "description": "Browser based game",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "start": "http-server dist",
+    "build": "webpack --mode production",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serviktor050/js-advanced-diploma.git"
+  },
+  "keywords": [
+    "game"
+  ],
+  "author": "serviktor050",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/serviktor050/js-advanced-diploma/issues"
+  },
+  "homepage": "https://github.com/serviktor050/js-advanced-diploma#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.8.3",
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "babel-jest": "^24.9.0",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.4.2",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.0",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "http-server": "^0.12.1",
+    "jest": "^24.9.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "url-loader": "^3.0.0",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  },
+  "dependencies": {
+    "core-js": "^3.6.4"
+  }
+}
