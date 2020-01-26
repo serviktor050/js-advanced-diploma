@@ -1,4 +1,5 @@
-import { calcHealthLevel, calcTileType } from '../utils.js';
+import calcTileType from '../utils.js';
+import { calcHealthLevel } from '../utils.js';
 
 export default class GamePlay {
   constructor() {
