@@ -1,11 +1,21 @@
-import themes from '../themes.js';
+//classes
 import GamePlay from './GamePlay.js';
-import heroInformation from '../heroInformation.js';
 import GameState from './GameState.js';
 
+//functions
+import themes from '../themes.js';
+import heroInformation from '../heroInformation.js';
+import cursors from '../cursors.js';
+import movementHero from '../movementHero.js';
+import attackHero from '../attackHero.js';
+
+//const & let
 const userPosition = [];
 const enemyPosition = [];
 let chooseCharacterIndex = 0;
+let boardSize;
+let allowPos;
+let allowDis;
 
 export default class GameController {
   constructor(gamePlay, stateService) {
@@ -47,6 +57,29 @@ export default class GameController {
       for (const item of [...userPosition, ...enemyPosition]) {
         if (item.position === index) {
           this.gamePlay.showCellTooltip(heroInformation(item.character), index);
+        }
+      }
+
+      if (this.selected) {
+        boardSize = this.gamePlay.boardSize;
+        allowPos = this.chooseCharacter.position;
+        allowDis = this.chooseCharacter.character.distance;
+
+        const allowPosition = movementHero(allowPos, allowDis, boardSize);
+        allowDis = this.chooseCharacter.character.distanceAttack;
+
+        const allowAttack = attackHero(allowPos, allowDis, boardSize);
+
+        if (this.findIndexInArr(userPosition) !== -1) {
+          this.gamePlay.setCursor(cursors.pointer);
+        } else if (allowPosition.includes(index) && findIndexInArr([...userPosition, ...enemyPosition]) === -1) {
+          this.gamePlay.selectCell(index, 'green');
+          this.gamePlay.setCursor(cursors.pointer);
+        } else if (allowAttack.includes(index) && this.findIndexInArr(enemyPosition) !== -1) {
+          this.gamePlay.selectCell(index, 'red');
+          this.gamePlay.setCursor(cursors.crosshair);
+        } else {
+          this.gamePlay.setCursor(cursors.notallowed);
         }
       }
     }

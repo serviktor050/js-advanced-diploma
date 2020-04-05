@@ -9,13 +9,13 @@ export default function calcTileType(index, boardSize) {
   if (index > 0 && index < (boardSize - 1)) {
     return 'top';
   }
-  if (index === (Math.pow(boardSize, 2) - boardSize)) {
+  if (index === ((boardSize ** 2) - boardSize)) {
     return 'bottom-left';
   }
-  if (index === (Math.pow(boardSize, 2) - 1)) {
+  if (index === ((boardSize ** 2) - 1)) {
     return 'bottom-right';
   }
-  if (index > (Math.pow(boardSize, 2) - boardSize) && index < (Math.pow(boardSize, 2) - 1)) {
+  if (index > ((boardSize ** 2) - boardSize) && index < ((boardSize ** 2) - 1)) {
     return 'bottom';
   }
   if (index % boardSize === 0) {
