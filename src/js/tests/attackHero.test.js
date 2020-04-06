@@ -1,10 +1,10 @@
-import attackHero from '../movementHero.js';
+import attackHero from '../attackHero.js';
 
 test('Атака разрешена', () => {
     const boardSize = 8
     const distance = 1;
     const position = 10;
-    const expected = [11, 18, 19, 9, 17, 2, 1, 3];
+    const expected = [1, 2, 3, 9, 11, 17, 18, 19];
     const received = attackHero(position, distance, boardSize);
     expect(received).toEqual(expected);
   });
