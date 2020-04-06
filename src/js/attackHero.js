@@ -3,6 +3,18 @@ export function attackHero(position, distance, boardSize) {
   let stringArray = [];
   const indexOfBoard = boardSize ** 2;
 
+  function compareNumeric(a, b) {
+    if (a > b) {
+      return 1;
+    }
+    if (a == b) {
+      return 0;
+    } 
+    if (a < b) {
+      return -1;
+    } 
+  }
+
   for (let i = 0; i < indexOfBoard; i += 1) {
     stringArray.push(i);
     if (stringArray.length === boardSize) {

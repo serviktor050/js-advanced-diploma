@@ -1,4 +1,4 @@
-export function originalArray(data) {
+export default function originalArray(data) {
   const array = [];
   const object = {};
   for (let i = 0; i < data.length; i += 1) {

@@ -1,4 +1,4 @@
-export function movementHero(position, distance, boardSize) {
+export default function movementHero(position, distance, boardSize) {
   const board = [];
   let stringArray = [];
   const indexOfBoard = boardSize ** 2;
@@ -13,9 +13,9 @@ export function movementHero(position, distance, boardSize) {
 
   const stringIndex = Math.floor(position / boardSize);
   const columnIndex = position % boardSize;
-  const allowedIndex = [];
+  let allowedIndex = [];
 
-  for (let i = 0; i < distance; i += 1) {
+  for (let i = 1; i <= distance; i += 1) {
     let allowedColumn = columnIndex + i;
     if (allowedColumn < boardSize) {
       allowedIndex.push(board[stringIndex][allowedColumn]);
