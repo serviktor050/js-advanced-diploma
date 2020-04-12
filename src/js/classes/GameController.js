@@ -25,6 +25,8 @@ export default class GameController {
     this.chooseCharacter = {};
     this.selected = false;
     this.activeGamer = 'user';
+    this.points = 0;
+    this.level = 1;
   }
 
   init() {
@@ -54,6 +56,42 @@ export default class GameController {
         this.selected = false;
         this.gamePlay.redrawPositions([...userPosition, ...enemyPosition])
         this.activeGamer = 'enemy';
+        // Ответ соперника
+      } else if (this.selected && this.gamePlay.boardEl.style.cursor === 'crosshair') {
+        const enemyHero = [...enemyPosition].find((item) => item.position === index);
+        this.gamePlay.deselectCell(chooseCharacterIndex);
+        this.gamePlay.deselectCell(index);
+        this.gamePlay.setCursor(cursors.auto);
+        this.selected = false;
+
+        await this.heroAttacker(this.chooseCharacter.character, enemyHero);
+        if (enemyPosition.length > 0) {
+          //Ответ соперника
+        }
+      }
+    }
+  }
+
+  async heroAttacker(attacker, target) {
+    const hero = target.character;
+    let damage = Math.max(attacker.attack - hero.defence, attacker.attack * 0.1);
+    damage = Math.floor(damage);
+
+    await this.gamePlay.showDamage(target.position, damage);
+    hero.health -= damage;
+    this.activeGamer = this.activeGamer === 'user' ? 'enemy' : 'enemy';
+    if (hero.health <= 0) {
+      userPosition = userPosition.filter((item) => item.position !== target.position);
+      enemyPosition = enemyPosition.filter((item) => item.position !== target.position);
+      if (userPosition.length === 0) {
+        this.gamePlay.showMessage('Вы проиграли');
+        this.bisyBoard = true;
+      }
+      if (enemyPosition.length === 0) {
+        userPosition.forEach(function(item){
+          this.points += item.character.health; 
+        });
+        //Код для обновления уровня
       }
     }
   }
