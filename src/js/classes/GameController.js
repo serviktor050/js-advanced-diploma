@@ -24,6 +24,7 @@ export default class GameController {
     this.bisyBoard = false;
     this.chooseCharacter = {};
     this.selected = false;
+    this.activeGamer = 'user';
   }
 
   init() {
@@ -46,6 +47,13 @@ export default class GameController {
         this.selected = true;
       } else if (!this.selected && this.findIndexInArr([...enemyPosition]) !== -1) {
         GamePlay.showError('Вы выбираете персонажа соперника');
+      } else if (this.selected && this.gamePlay.boardEl.style.cursor === 'pointer') {
+        this.chooseCharacter.position = index;
+        this.gamePlay.deselectCell(chooseCharacterIndex);
+        this.gamePlay.selectCell(index);
+        this.selected = false;
+        this.gamePlay.redrawPositions([...userPosition, ...enemyPosition])
+        this.activeGamer = 'enemy';
       }
     }
   }
