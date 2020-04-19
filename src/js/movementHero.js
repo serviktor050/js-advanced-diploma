@@ -13,7 +13,7 @@ export default function movementHero(position, distance, boardSize) {
 
   const stringIndex = Math.floor(position / boardSize);
   const columnIndex = position % boardSize;
-  let allowedIndex = [];
+  const allowedIndex = [];
 
   for (let i = 1; i <= distance; i += 1) {
     let allowedColumn = columnIndex + i;

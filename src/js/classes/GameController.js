@@ -1,15 +1,15 @@
-//classes
+// classes
 import GamePlay from './GamePlay.js';
 import GameState from './GameState.js';
 
-//functions
+// functions
 import themes from '../themes.js';
 import heroInformation from '../heroInformation.js';
 import cursors from '../cursors.js';
 import movementHero from '../movementHero.js';
 import attackHero from '../attackHero.js';
 
-//const & let
+// const & let
 const userPosition = [];
 const enemyPosition = [];
 let chooseCharacterIndex = 0;
@@ -35,7 +35,7 @@ export default class GameController {
     this.gamePlay.drawUi('prairie');
   }
 
-  onCellClick(index) {
+  async onCellClick(index) {
     // TODO: react to click
     this.index = index;
     if (!this.bisyBoard) {
@@ -54,9 +54,9 @@ export default class GameController {
         this.gamePlay.deselectCell(chooseCharacterIndex);
         this.gamePlay.selectCell(index);
         this.selected = false;
-        this.gamePlay.redrawPositions([...userPosition, ...enemyPosition])
+        this.gamePlay.redrawPositions([...userPosition, ...enemyPosition]);
         this.activeGamer = 'enemy';
-        // Ответ соперника
+        this.opponentResponse();
       } else if (this.selected && this.gamePlay.boardEl.style.cursor === 'crosshair') {
         const enemyHero = [...enemyPosition].find((item) => item.position === index);
         this.gamePlay.deselectCell(chooseCharacterIndex);
@@ -66,7 +66,7 @@ export default class GameController {
 
         await this.heroAttacker(this.chooseCharacter.character, enemyHero);
         if (enemyPosition.length > 0) {
-          //Ответ соперника
+          this.opponentResponse();
         }
       }
     }
@@ -88,10 +88,10 @@ export default class GameController {
         this.bisyBoard = true;
       }
       if (enemyPosition.length === 0) {
-        userPosition.forEach(function(item){
-          this.points += item.character.health; 
+        userPosition.forEach(function (item) {
+          this.points += item.character.health;
         });
-        //Код для обновления уровня
+        // Код для обновления уровня
       }
     }
   }
@@ -148,5 +148,129 @@ export default class GameController {
 
   findIndexInArr(array) {
     return array.findIndex((item) => item.position === this.index);
+  }
+
+  opponentResponse() {
+    if (this.activeGamer === 'enemy') {
+      // Перемещение
+      const index = Math.floor(Math.random() * [...enemyPosition].length);
+      const enemy = [...enemyPosition][index];
+      this.enemyHeroMoving(enemy);
+      this.gamePlay.redrawPositions([...userPosition, ...enemyPosition]);
+      this.activeGamer = 'user';
+
+      // Атака
+      for (const activeEnemy of [...enemyPosition]) {
+        allowDis = this.chooseCharacter.character.distanceAttack;
+        allowPos = activeEnemy.position;
+        boardSize = this.gamePlay.boardSize;
+
+        const allowAttack = attackHero(allowPos, allowDis, boardSize);
+        const target = this.attackOfEnemy(allowAttack);
+        if (target !== null) {
+          this.enemyAttackers(itemEnemy.character, target);
+          return;
+        }
+      }
+    }
+  }
+
+  enemyHeroMoving(enemy) {
+    const activeEnemy = enemy;
+    const activeEnemyDistance = activeEnemy.character.distance;
+
+    let row;
+    let column;
+    let stepRow;
+    let stepColumn;
+    let endPoint;
+    const activeEnemyRow = this.posRow(activeEnemy.position);
+    const activeEnemyColumn = this.posColumn(activeEnemy.position);
+    let userObj = {};
+
+    for (const activeUser of [...userPosition]) {
+      const activeUserRow = this.posRow(activeUser.position);
+      const activeUserColumn = this.posColumn(activeUser.position);
+      stepRow = activeEnemyRow - activeUserRow;
+      stepColumn = activeEnemyColumn - activeUserColumn;
+      endPoint = Math.abs(stepRow) + Math.abs(stepColumn);
+
+      if (userObj.steps === undefined || endPoint < userObj.steps) {
+        userObj = {
+          steprow: stepRow,
+          stepcolumn: stepColumn,
+          steps: endPoint,
+          positionRow: activeUserRow,
+          positionColumn: activeUserColumn,
+        };
+      }
+    }
+
+    if (Math.abs(userObj.steprow) === Math.abs(userObj.stepcolumn)) {
+      if (Math.abs(userObj.steprow) > activeEnemyDistance) {
+        row = (activeEnemyRow - (activeEnemyDistance * Math.sign(userObj.steprow)));
+        column = (activeEnemyColumn - (activeEnemyDistance * Math.sign(userObj.stepcolumn)));
+        activeEnemy.position = this.indexRowColumn(row, column);
+      } else {
+        row = (activeEnemyRow - (userObj.steprow - (1 * Math.sign(userObj.steprow))));
+        column = (activeEnemyColumn - (userObj.stepcolumn - (1 * Math.sign(userObj.steprow))));
+        activeEnemy.position = this.indexRowColumn(row, column);
+      }
+    } else if (userObj.stepcolumn === 0) {
+      if (Math.abs(userObj.steprow) > activeEnemyDistance) {
+        row = (activeEnemyRow - (activeEnemyDistance * Math.sign(userObj.steprow)));
+        activeEnemy.position = this.indexRowColumn(row, activeEnemyColumn);
+      } else {
+        row = (activeEnemyRow - (userObj.steprow - (1 * Math.sign(userObj.steprow))));
+        activeEnemy.position = this.indexRowColumn(row, activeEnemyColumn);
+      }
+    } else if (userObj.steprow === 0) {
+      if (Math.abs(userObj.stepcolumn) > activeEnemyDistance) {
+        column = (activeEnemyColumn - (activeEnemyDistance * Math.sign(userObj.stepcolumn)));
+        activeEnemy.position = this.indexRowColumn(activeEnemyRow, column);
+      } else {
+        column = (activeEnemyColumn - (userObj.stepcolumn - (1 * Math.sign(userObj.stepcolumn))));
+        activeEnemy.position = this.indexRowColumn(activeEnemyRow, column);
+      }
+    } else if (Math.abs(userObj.steprow) > Math.abs(userObj.stepcolumn)) {
+      if (Math.abs(userObj.steprow) > activeEnemyDistance) {
+        row = (activeEnemyRow - (activeEnemyDistance * Math.sign(userObj.steprow)));
+        activeEnemy.position = this.indexRowColumn(row, activeEnemyColumn);
+      } else {
+        row = (activeEnemyRow - (userObj.steprow));
+        activeEnemy.position = this.indexRowColumn(row, activeEnemyColumn);
+      }
+    } else if (Math.abs(userObj.stepcolumn) > activeEnemyDistance) {
+      column = (activeEnemyColumn - (activeEnemyDistance * Math.sign(userObj.stepcolumn)));
+      activeEnemy.position = this.indexRowColumn(activeEnemyRow, column);
+    } else {
+      activeEnemy.position = this.indexRowColumn(activeEnemyRow, activeEnemyColumn);
+    }
+  }
+
+  posRow(index) {
+    return Math.floor(index / this.gamePlay.boardSize);
+  }
+
+  posColumn(index) {
+    return index % this.gamePlay.boardSize;
+  }
+
+  indexRowColumn(row, column) {
+    return (row * 8) + column;
+  }
+
+  attackOfEnemy(allowAttack) {
+    for (const activeUser of [...userPosition]) {
+      if (allowAttack.includes(activeUser.position)) {
+        return activeUser;
+      }
+    }
+    return null;
+  }
+
+  async enemyAttackers(character, target) {
+    await this.heroAttacker(character, target);
+    this.activeGamer = 'user';
   }
 }
