@@ -4,10 +4,10 @@ export default function originalArray(data) {
   for (let i = 0; i < data.length; i += 1) {
     object[data[i]] = data[i];
   }
-  for (const m in object) {
-    if (Object.prototype.hasOwnProperty.call(object, m)) {
-      array.push(object[m]);
+  Object.values(object).forEach((value) => {
+    if (Object.prototype.hasOwnProperty.call(object, value)) {
+      array.push(object[value]);
     }
-  }
+  });
   return array;
 }

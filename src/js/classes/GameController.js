@@ -1,17 +1,20 @@
 // classes
 import GamePlay from './GamePlay.js';
 import GameState from './GameState.js';
+import PositionedCharacter from './PositionedCharacter.js';
 
-// functions
-import themes from '../themes.js';
+// functions & consts
 import heroInformation from '../heroInformation.js';
 import cursors from '../cursors.js';
 import movementHero from '../movementHero.js';
 import attackHero from '../attackHero.js';
+import { generateTeam } from '../generators.js';
+import { userTeam, userTeamFirstLevel, enemyTeam } from '../teams.js';
+import themes from '../themes.js';
 
-// const & let
-const userPosition = [];
-const enemyPosition = [];
+// lets
+let userPosition = [];
+let enemyPosition = [];
 let chooseCharacterIndex = 0;
 let boardSize;
 let allowPos;
@@ -27,12 +30,21 @@ export default class GameController {
     this.activeGamer = 'user';
     this.points = 0;
     this.level = 1;
+    this.index = 0;
+    this.activeTheme = themes.prairie;
+    this.userTeam = [];
+    this.enemyTeam = [];
   }
 
   init() {
     // TODO: add event listeners to gamePlay events
     // TODO: load saved stated from stateService
-    this.gamePlay.drawUi('prairie');
+    this.eventWithMouse();
+    this.nextLevel();
+  }
+
+  findIndexInArr(array) {
+    return array.findIndex((item) => item.position === this.index);
   }
 
   async onCellClick(index) {
@@ -88,23 +100,26 @@ export default class GameController {
         this.bisyBoard = true;
       }
       if (enemyPosition.length === 0) {
-        userPosition.forEach(function (item) {
+        userPosition.forEach((item) => {
           this.points += item.character.health;
-        });
-        // Код для обновления уровня
+        }, this);
+        this.levelUp();
+        this.level += 1;
+        this.nextLevel();
       }
     }
+    this.gamePlay.redrawPositions([...userPosition, ...enemyPosition]);
   }
 
   onCellEnter(index) {
     // TODO: react to mouse enter
     this.index = index;
     if (!this.bisyBoard) {
-      for (const item of [...userPosition, ...enemyPosition]) {
+      [...userPosition, ...enemyPosition].forEach((item) => {
         if (item.position === index) {
           this.gamePlay.showCellTooltip(heroInformation(item.character), index);
         }
-      }
+      }, this);
 
       if (this.selected) {
         boardSize = this.gamePlay.boardSize;
@@ -118,7 +133,8 @@ export default class GameController {
 
         if (this.findIndexInArr(userPosition) !== -1) {
           this.gamePlay.setCursor(cursors.pointer);
-        } else if (allowPosition.includes(index) && findIndexInArr([...userPosition, ...enemyPosition]) === -1) {
+        } else if (allowPosition.includes(index)
+        && this.findIndexInArr([...userPosition, ...enemyPosition]) === -1) {
           this.gamePlay.selectCell(index, 'green');
           this.gamePlay.setCursor(cursors.pointer);
         } else if (allowAttack.includes(index) && this.findIndexInArr(enemyPosition) !== -1) {
@@ -144,10 +160,7 @@ export default class GameController {
     this.gamePlay.addCellEnterListener(this.onCellEnter.bind(this));
     this.gamePlay.addCellLeaveListener(this.onCellLeave.bind(this));
     this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
-  }
-
-  findIndexInArr(array) {
-    return array.findIndex((item) => item.position === this.index);
+    this.gamePlay.addNewGameListener(this.newGame.bind(this));
   }
 
   opponentResponse() {
@@ -160,7 +173,7 @@ export default class GameController {
       this.activeGamer = 'user';
 
       // Атака
-      for (const activeEnemy of [...enemyPosition]) {
+      [...enemyPosition].forEach((activeEnemy) => {
         allowDis = this.chooseCharacter.character.distanceAttack;
         allowPos = activeEnemy.position;
         boardSize = this.gamePlay.boardSize;
@@ -168,10 +181,9 @@ export default class GameController {
         const allowAttack = attackHero(allowPos, allowDis, boardSize);
         const target = this.attackOfEnemy(allowAttack);
         if (target !== null) {
-          this.enemyAttackers(itemEnemy.character, target);
-          return;
+          this.enemyAttackers(activeEnemy.character, target);
         }
-      }
+      }, this);
     }
   }
 
@@ -188,7 +200,7 @@ export default class GameController {
     const activeEnemyColumn = this.posColumn(activeEnemy.position);
     let userObj = {};
 
-    for (const activeUser of [...userPosition]) {
+    [...userPosition].forEach((activeUser) => {
       const activeUserRow = this.posRow(activeUser.position);
       const activeUserColumn = this.posColumn(activeUser.position);
       stepRow = activeEnemyRow - activeUserRow;
@@ -204,7 +216,7 @@ export default class GameController {
           positionColumn: activeUserColumn,
         };
       }
-    }
+    }, this);
 
     if (Math.abs(userObj.steprow) === Math.abs(userObj.stepcolumn)) {
       if (Math.abs(userObj.steprow) > activeEnemyDistance) {
@@ -261,16 +273,113 @@ export default class GameController {
   }
 
   attackOfEnemy(allowAttack) {
-    for (const activeUser of [...userPosition]) {
+    [...userPosition].forEach((activeUser) => {
       if (allowAttack.includes(activeUser.position)) {
         return activeUser;
       }
-    }
-    return null;
+      return null;
+    }, this);
   }
 
   async enemyAttackers(character, target) {
     await this.heroAttacker(character, target);
     this.activeGamer = 'user';
+  }
+
+  newGame() {
+    this.bisyBoard = false;
+    const maxPoint = this.maxPoint();
+    const activeGameState = this.stateService.load();
+    if (activeGameState) {
+      activeGameState.maxPoint = maxPoint;
+      this.stateService.save(GameState.from(activeGameState));
+    }
+    userPosition = [];
+    enemyPosition = [];
+    this.level = 1;
+    this.point = 0;
+    this.activeTheme = themes.prairie;
+    this.nextLevel();
+  }
+
+  maxPoint() {
+    let maxPoint = 0;
+    try {
+      const loadGameState = this.stateService.load();
+      if (loadGameState) {
+        maxPoint = Math.max(loadGameState.maxPoint, this.point);
+      }
+    } catch (e) {
+      maxPoint = this.point;
+      console.log('Ошибка при определении количества очков');
+    }
+    return maxPoint;
+  }
+
+  nextLevel() {
+    this.activeGamer = 'user';
+    if (this.level === 1) {
+      this.userTeam = generateTeam(userTeamFirstLevel, 1, 2);
+      this.enemyTeam = generateTeam(enemyTeam, 1, 2);
+      this.positionTeams(this.userTeam, this.enemyTeam);
+    } else if (this.level === 2) {
+      this.activeTheme = themes.desert;
+      this.userTeam = generateTeam(userTeam, 1, 1);
+      this.enemyTeam = generateTeam(enemyTeam, 2, (this.userTeam.length));
+      this.positionTeams(this.userTeam, this.enemyTeam);
+    } else if (this.level === 3) {
+      this.activeTheme = themes.arctic;
+      this.userTeam = generateTeam(userTeam, 2, 2);
+      this.enemyTeam = generateTeam(enemyTeam, 3, (this.userTeam.length));
+      this.positionTeams(this.userTeam, this.enemyTeam);
+    } else if (this.level === 4) {
+      this.activeTheme = themes.mountain;
+      this.userTeam = generateTeam(userTeam, 3, 2);
+      this.enemyTeam = generateTeam(enemyTeam, 4, (this.userTeam.length));
+      this.positionTeams(this.userTeam, this.enemyTeam);
+    } else {
+      this.bisyBoard = true;
+      this.gamePlay.showMessage(`Game Over! Your score: ${this.point}!`);
+      return;
+    }
+
+    const heroPosition = this.getPosition(userPosition.length);
+
+    for (let i = 0; i < userPosition.length; i += 1) {
+      userPosition[i].position = heroPosition.user[i];
+      enemyPosition[i].position = heroPosition.enemy[i];
+    }
+
+    this.gamePlay.drawUi(this.activeTheme);
+    this.gamePlay.redrawPositions([...userPosition, ...enemyPosition]);
+  }
+
+  positionTeams(firstTeam, secondTeam) {
+    for (let i = 0; i < firstTeam.length; i += 1) {
+      userPosition.push(new PositionedCharacter(firstTeam[i], 0));
+    }
+    for (let i = 0; i < secondTeam.length; i += 1) {
+      enemyPosition.push(new PositionedCharacter(secondTeam[i], 0));
+    }
+  }
+
+  getPosition(value) {
+    const position = { user: [], enemy: [] };
+    for (let i = 0; i < value; i += 1) {
+      do {
+        this.randomPosition();
+      } while (position.user.includes(this.randomPosition()));
+      position.user.push(this.randomPosition());
+
+      do {
+        this.randomPosition(6);
+      } while (position.enemy.includes(this.randomPosition(6)));
+      position.enemy.push(this.randomPosition(6));
+    }
+    return position;
+  }
+
+  randomPosition(value) {
+    return (Math.floor(Math.random() * 8) * 8) + ((Math.floor(Math.random() * 2) + value));
   }
 }
