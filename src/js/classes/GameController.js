@@ -31,7 +31,7 @@ export default class GameController {
     this.points = 0;
     this.level = 1;
     this.index = 0;
-    this.activeTheme = themes.prairie;
+    this.activeTheme = themes.prairie.name;
     this.userTeam = [];
     this.enemyTeam = [];
   }
@@ -40,7 +40,6 @@ export default class GameController {
     // TODO: add event listeners to gamePlay events
     // TODO: load saved stated from stateService
     this.eventWithMouse();
-    
     this.nextLevel();
   }
 
@@ -53,7 +52,7 @@ export default class GameController {
     this.index = index;
     if (!this.bisyBoard) {
       if (this.gamePlay.boardEl.style.cursor === 'not-allowed') {
-        this.gamePlay.showError('Действие не может быть выполнено');
+        GamePlay.showError('Действие не может быть выполнено');
       } else if (this.findIndexInArr([...userPosition]) !== -1) {
         this.gamePlay.deselectCell(chooseCharacterIndex);
         this.gamePlay.selectCell(index);
@@ -61,7 +60,7 @@ export default class GameController {
         this.chooseCharacter = [...userPosition].find((item) => item.position === index);
         this.selected = true;
       } else if (!this.selected && this.findIndexInArr([...enemyPosition]) !== -1) {
-        this.gamePlay.showError('Вы выбираете персонажа соперника');
+        GamePlay.showError('Вы выбираете персонажа соперника');
       } else if (this.selected && this.gamePlay.boardEl.style.cursor === 'pointer') {
         this.chooseCharacter.position = index;
         this.gamePlay.deselectCell(chooseCharacterIndex);
@@ -197,6 +196,7 @@ export default class GameController {
         const target = this.attackOfEnemy(allowAttack);
         if (target !== null) {
           this.enemyAttackers(activeEnemy.character, target);
+          return;
         }
       }, this);
     }
@@ -313,7 +313,7 @@ export default class GameController {
     enemyPosition = [];
     this.level = 1;
     this.points = 0;
-    this.activeTheme = themes.prairie;
+    this.activeTheme = themes.prairie.name;
     this.nextLevel();
   }
 
@@ -338,17 +338,17 @@ export default class GameController {
       this.enemyTeam = generateTeam(enemyTeam, 1, 2);
       this.positionTeams(this.userTeam, this.enemyTeam);
     } else if (this.level === 2) {
-      this.activeTheme = themes.desert;
+      this.activeTheme = themes.desert.name;
       this.userTeam = generateTeam(userTeam, 1, 1);
       this.enemyTeam = generateTeam(enemyTeam, 2, (this.userTeam.length + userPosition.length));
       this.positionTeams(this.userTeam, this.enemyTeam);
     } else if (this.level === 3) {
-      this.activeTheme = themes.arctic;
+      this.activeTheme = themes.arctic.name;
       this.userTeam = generateTeam(userTeam, 2, 2);
       this.enemyTeam = generateTeam(enemyTeam, 3, (this.userTeam.length + userPosition.length));
       this.positionTeams(this.userTeam, this.enemyTeam);
     } else if (this.level === 4) {
-      this.activeTheme = themes.mountain;
+      this.activeTheme = themes.mountain.name;
       this.userTeam = generateTeam(userTeam, 3, 2);
       this.enemyTeam = generateTeam(enemyTeam, 4, (this.userTeam.length + userPosition.length));
       this.positionTeams(this.userTeam, this.enemyTeam);
@@ -391,7 +391,7 @@ export default class GameController {
       position.user.push(random);
 
       do {
-        this.randomPosition(6);
+        random = this.randomPosition(6);
       } while (position.enemy.includes(random));
       position.enemy.push(random);
     }
