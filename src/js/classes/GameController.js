@@ -96,7 +96,7 @@ export default class GameController {
       userPosition = userPosition.filter((item) => item.position !== target.position);
       enemyPosition = enemyPosition.filter((item) => item.position !== target.position);
       if (userPosition.length === 0) {
-        this.gamePlay.showMessage('Вы проиграли');
+        GamePlay.showMessage('Вы проиграли');
         this.bisyBoard = true;
       }
       if (enemyPosition.length === 0) {
