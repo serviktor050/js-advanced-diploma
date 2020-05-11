@@ -184,7 +184,6 @@ export default class GameController {
       const enemy = [...enemyPosition][index];
       this.enemyHeroMoving(enemy);
       this.gamePlay.redrawPositions([...userPosition, ...enemyPosition]);
-      this.activeGamer = 'user';
 
       // Атака
       [...enemyPosition].forEach((activeEnemy) => {
@@ -196,9 +195,9 @@ export default class GameController {
         const target = this.attackOfEnemy(allowAttack);
         if (target !== null) {
           this.enemyAttackers(activeEnemy.character, target);
-          return;
         }
       }, this);
+      this.activeGamer = 'user';
     }
   }
 
@@ -288,12 +287,12 @@ export default class GameController {
   }
 
   attackOfEnemy(allowAttack) {
-    [...userPosition].forEach((activeUser) => {
+    for (const activeUser of [...userPosition]) {
       if (allowAttack.includes(activeUser.position)) {
         return activeUser;
       }
       return null;
-    }, this);
+    }
   }
 
   async enemyAttackers(character, target) {
