@@ -192,9 +192,12 @@ export default class GameController {
         allowDis = this.chooseCharacter.character.distanceAttack;
         allowPos = activeEnemy.position;
         boardSize = this.gamePlay.boardSize;
+        // console.log(enemyPosition);
 
         const allowAttack = attackHero(allowPos, allowDis, boardSize);
+        // console.log(allowAttack);
         const target = this.attackOfEnemy(allowAttack);
+        console.log(target);
         if (target !== null) {
           this.enemyAttackers(activeEnemy.character, target);
         }
@@ -329,7 +332,6 @@ export default class GameController {
       maxPoint,
     };
     this.stateService.save(GameState.from(activeGameState));
-    console.log(activeGameState);
   }
 
   loadGame() {
@@ -345,7 +347,6 @@ export default class GameController {
         this.gamePlay.redrawPositions([...userPosition, ...enemyPosition]);
       }
     } catch (e) {
-      console.log(e);
       GamePlay.showMessage('Не удалось загрузить игру');
       this.newGame();
     }
@@ -360,7 +361,7 @@ export default class GameController {
       }
     } catch (e) {
       maxPoint = this.points;
-      console.log('Ошибка при определении количества очков');
+      GamePlay.showMessage('Ошибка при определении количества очков');
     }
     return maxPoint;
   }
