@@ -175,6 +175,8 @@ export default class GameController {
     this.gamePlay.addCellLeaveListener(this.onCellLeave.bind(this));
     this.gamePlay.addCellClickListener(this.onCellClick.bind(this));
     this.gamePlay.addNewGameListener(this.newGame.bind(this));
+    this.gamePlay.addSaveGameListener(this.saveGame.bind(this));
+    this.gamePlay.addLoadGameListener(this.loadGame.bind(this));
   }
 
   opponentResponse() {
@@ -314,6 +316,39 @@ export default class GameController {
     this.points = 0;
     this.activeTheme = themes.prairie.name;
     this.nextLevel();
+  }
+
+  saveGame() {
+    const maxPoint = this.maxPoint();
+    const activeGameState = {
+      points: this.points,
+      level: this.level,
+      activeTheme: this.activeTheme,
+      userPosition,
+      enemyPosition,
+      maxPoint,
+    };
+    this.stateService.save(GameState.from(activeGameState));
+    console.log(activeGameState);
+  }
+
+  loadGame() {
+    try {
+      const activeGameState = this.stateService.load();
+      if (activeGameState) {
+        this.points = activeGameState.points;
+        this.level = activeGameState.level;
+        this.activeTheme = activeGameState.activeTheme;
+        userPosition = activeGameState.userPosition;
+        enemyPosition = activeGameState.enemyPosition;
+        this.gamePlay.drawUi(this.activeTheme);
+        this.gamePlay.redrawPositions([...userPosition, ...enemyPosition]);
+      }
+    } catch (e) {
+      console.log(e);
+      GamePlay.showMessage('Не удалось загрузить игру');
+      this.newGame();
+    }
   }
 
   maxPoint() {
