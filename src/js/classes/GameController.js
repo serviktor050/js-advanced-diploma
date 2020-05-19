@@ -192,10 +192,8 @@ export default class GameController {
         allowDis = this.chooseCharacter.character.distanceAttack;
         allowPos = activeEnemy.position;
         boardSize = this.gamePlay.boardSize;
-        // console.log(enemyPosition);
 
         const allowAttack = attackHero(allowPos, allowDis, boardSize);
-        // console.log(allowAttack);
         const target = this.attackOfEnemy(allowAttack);
         console.log(target);
         if (target !== null) {

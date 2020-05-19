@@ -2,7 +2,8 @@ import Character from '../classes/Character.js';
 
 test('Ошибка при создании new Character', () => {
   expect(() => {
-    new Character();
+    const character = new Character();
+    return character;
   }).toThrow();
 });
 
