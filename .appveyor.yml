@@ -1,6 +1,4 @@
-image: Ubuntu1804  # образ для сборки
-
-stack: node 10  # окружение
+image: Visual Studio 2015  # образ для сборки
 
 branches:
   only:
@@ -8,13 +6,24 @@ branches:
 
 cache: node_modules  # кеширование
 
-install:
-  - npm install  # команда установки зависимостей
+init:
+  - ps: Install-Product node 10
 
-build: off  # отключаем встроенную в appveyor систему сборки
+install:
+  - npm  # команда установки зависимостей
+
+build: off
 
 build_script:
-  - npm run build   # команда сборки
+  - npm run build  # команда сборки
 
 test_script:
   - npm run lint && npm test  # скрипт тестирования
+
+deploy_script:  # скрипт развертывания
+  - git config --global credential.helper store
+  - git config --global user.name AppVeyor
+  - git config --global user.email ci@appveyor.com
+  - echo https://%GITHUB_TOKEN%:x-oauth-basic@github.com>%USERPROFILE%\.git-credentials
+  - dos2unix %USERPROFILE%\.git-credentials
+  - npx push-dir --dir=dist --branch=gh-pages --force --verbose
