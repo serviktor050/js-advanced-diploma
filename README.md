@@ -1,6 +1,6 @@
 # AJS. Retro Game
 
-##Ссылка на игру
+## Ссылка на игру
 
 https://serviktor050.github.io/js-advanced-diploma/
 
