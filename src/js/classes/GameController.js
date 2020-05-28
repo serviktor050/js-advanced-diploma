@@ -387,7 +387,7 @@ export default class GameController {
       this.positionTeams(this.userTeam, this.enemyTeam);
     } else {
       this.bisyBoard = true;
-      this.gamePlay.showMessage(`Game Over! Your score: ${this.points}!`);
+      GamePlay.showMessage(`Вы победили! Вы набрали: ${this.points} очков!`);
       return;
     }
 
