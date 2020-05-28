@@ -7,7 +7,7 @@ beforeEach(() => {
 });
 
 test('Успешная загрузка метода load', () => {
-  const expected = `{"level":3,"activeTheme":"arctic","userPositions":[],"points":123,"maxPoint":123}`;
+  const expected = '{"level":3,"activeTheme":"arctic","userPositions":[],"points":123,"maxPoint":123}';
   loadingData.mockReturnValue(expected);
   const recived = loadingGameStateService.load();
   expect(JSON.stringify(recived)).toBe(expected);
