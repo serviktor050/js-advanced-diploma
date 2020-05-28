@@ -1,0 +1,255 @@
+:root {
+  --cell-size: 64px;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #000;
+  font-size: 16px;
+}
+
+.btn {
+  display: inline-block;
+  font-weight: 400;
+  color: #212529;
+  background-color: #f8f9fa;
+  text-align: center;
+  vertical-align: middle;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .25rem;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  border: none;
+}
+
+.controls {
+  text-align: center;
+  margin: 50px 0;
+}
+
+.board-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-column-gap: 2px;
+  grid-row-gap: 2px;
+}
+
+.cell {
+  position: relative;
+}
+
+.cell.selected::before {
+  content: '';
+  display: block;
+  border: 4px;
+  border-radius: 32px;
+  box-sizing: border-box;
+  width: var(--cell-size);
+  height: var(--cell-size);
+  opacity: 0.9;
+  position: absolute;
+}
+
+.cell.selected-yellow::before {
+  border-color: #ff0;
+  border-style: solid;
+}
+
+.cell.selected-green::before {
+  border-color: #0f0;
+  border-style: dashed;
+}
+
+.cell.selected-red::before {
+  border-color: #f00;
+  border-style: dashed;
+}
+
+.board.prairie {
+  --map-tile-top-left-url: url(944941b5a4150b3ab7b95c5565e93f26.png);
+  --map-tile-top-url: url(53b0ce74f2ee7ecf7f899d52b76f7c41.png);
+  --map-tile-top-right-url: url(cb31aed9abed684b1416a8d0bbc349c8.png);
+  --map-tile-bottom-left-url: url(57d2ee8ef64c9574d90bd4408ce566a3.png);
+  --map-tile-bottom-url: url(aa809db9183f33d83dadc87c90ec03e4.png);
+  --map-tile-bottom-right-url: url(1e69526aece993eb62a4e9a7dbab2ce0.png);
+  --map-tile-left-url: url(4498c20a30299f68cacc3a643fba15d0.png);
+  --map-tile-right-url: url(e8038a19a422fbab5a41c1284daa8649.png);
+  --map-tile-center-url: url(962e623908747e5dd6606711631bc0ab.png);
+}
+
+.board.desert {
+  --map-tile-top-left-url: url(76def566df2e3c9b81a53b8c020d590e.png);
+  --map-tile-top-url: url(2cd89e120e8abe04a3805e94cba4b648.png);
+  --map-tile-top-right-url: url(57dc37ab8390b7c6a0a00f841a0b4d22.png);
+  --map-tile-bottom-left-url: url(9694f14ccd62beafcb237ce6209bc2dc.png);
+  --map-tile-bottom-url: url(068e9e2330e45b62764039077eab97fc.png);
+  --map-tile-bottom-right-url: url(fe8e292e795c4e59bc4b1499f5ec3b17.png);
+  --map-tile-left-url: url(d0d5cf82c224a3a25f1f4b80cf1418f1.png);
+  --map-tile-right-url: url(6a44bbd09584c3eb38506881f84fb38e.png);
+  --map-tile-center-url: url(8094190d87ba84df5b4921382d625a33.png);
+}
+
+.board.arctic {
+  --map-tile-top-left-url: url(4352a3941dd053a4c797f861292a24b4.png);
+  --map-tile-top-url: url(9facb1e9337196dca1ae11de56f729da.png);
+  --map-tile-top-right-url: url(ec143f88600e1960c008515e53645e96.png);
+  --map-tile-bottom-left-url: url(8e95ffd01a4789f258b2294830be2c32.png);
+  --map-tile-bottom-url: url(0a83f96b73784f1bb948d26fcc90b2e1.png);
+  --map-tile-bottom-right-url: url(8ca894e1543f5d92491fea154d3db1ed.png);
+  --map-tile-left-url: url(5de0a2eddd64f4af0e0b5da5f1764bc6.png);
+  --map-tile-right-url: url(8513405119d3ee3f515e2f4dedabe9ae.png);
+  --map-tile-center-url: url(21e50771bc124eb646ceef234624c589.png);
+}
+
+.board.mountain {
+  --map-tile-top-left-url: url(37ef033311d78728fe1ed220af08e7a3.png);
+  --map-tile-top-url: url(78f73a7e59a483da5f95806e084a8ff4.png);
+  --map-tile-top-right-url: url(28483c1a39cfea3a67c105b19ba79075.png);
+  --map-tile-bottom-left-url: url(99c44981ba773451c984d78d99ba0d18.png);
+  --map-tile-bottom-url: url(3f1f776dab4c05e6312537f8bfb150c0.png);
+  --map-tile-bottom-right-url: url(f7bb827c7125feba80ebbd9da38454a5.png);
+  --map-tile-left-url: url(5c606a81a12012e0253fd966e9f59c1e.png);
+  --map-tile-right-url: url(144cbe0002758840aa9a18ee17756755.png);
+  --map-tile-center-url: url(b240956252316754fc61483d26d0316a.png);
+}
+
+.map-tile {
+  width: var(--cell-size);
+  height: var(--cell-size);
+}
+
+.map-tile-top-left {
+  background: var(--map-tile-top-left-url);
+}
+
+.map-tile-top {
+  background: var(--map-tile-top-url);
+}
+
+.map-tile-top-right {
+  background: var(--map-tile-top-right-url);
+}
+
+.map-tile-bottom-left {
+  background: var(--map-tile-bottom-left-url);
+}
+
+.map-tile-bottom {
+  background: var(--map-tile-bottom-url);
+}
+
+.map-tile-bottom-right {
+  background: var(--map-tile-bottom-right-url);
+}
+
+.map-tile-left {
+  background: var(--map-tile-left-url);
+}
+
+.map-tile-right {
+  background: var(--map-tile-right-url);
+}
+
+.map-tile-center {
+  background: var(--map-tile-center-url);
+}
+
+.character {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  position: absolute;
+  z-index: 99;
+}
+
+.character.generic {
+  background: url(83a3bfc64028f830d43d7ff4d4ef4475.png);
+}
+
+.character.bowman {
+  background: url(4dc025afd6c1cb8bab463bb9bb3c8559.png);
+}
+
+.character.daemon {
+  background: url(26feee432d4b7fbe061dcf95211d71b6.png);
+}
+
+.character.magician {
+  background: url(9b3e3859146eb046e3fc01725bd1db61.png);
+}
+
+.character.swordsman {
+  background: url(42bf61b08bee5f03d84e08292e15a2ad.png);
+}
+
+.character.undead {
+  background: url(d8bc1876c9c26ba768b9c55b650876d8.png);
+}
+
+.character.vampire {
+  background: url(aeda28b457e9e27f50b12f820c7c9636.png);
+}
+
+.character.zombie {
+  background: url(e0b2358b35945983fa0107f2c9722b46.png);
+}
+
+.health-level {
+  top: 2px;
+  left: 7px;
+  position: absolute;
+  width: 50px;
+  height: 4px;
+  background: #000;
+}
+
+.health-level-indicator {
+  height: 4px;
+}
+
+.health-level-indicator-high {
+  background: #0f0;
+}
+
+.health-level-indicator-normal {
+  background: #ff0;
+}
+
+.health-level-indicator-critical {
+  background: #f00;
+}
+
+.damage {
+  position: absolute;
+  width: var(--cell-size);
+  text-align: center;
+  z-index: 999;
+  color: #f00;
+  font-weight: bold;
+  animation: 500ms fade ease-out;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    top: calc(var(--cell-size) * 0.5);
+    font-size: 1rem;
+  }
+  to {
+    opacity: 1;
+    top: -20px;
+    font-size: 1.5rem;
+  }
+}
+
